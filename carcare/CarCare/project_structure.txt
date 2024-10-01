@@ -1,0 +1,64 @@
+CarCare/
+│
+├── dist/                       # Compiled output (TypeScript files)
+├── node_modules/              # Installed dependencies
+├── src/                       # Source files
+│   ├── config/                # Configuration files
+│   │   └── db.ts              # MongoDB connection
+│   │
+│   ├── controllers/           # Controllers for handling requests
+│   │   ├── authController.ts   # Authentication-related operations
+│   │   ├── userController.ts    # User-related operations
+│   │   ├── mechanicController.ts # Mechanic-related operations
+│   │   └── serviceController.ts  # Service-related operations
+│   │
+│   ├── middleware/            # Middleware for logging, authentication, etc.
+│   │   ├── authMiddleware.ts    # Middleware for authentication
+│   │   └── errorMiddleware.ts   # Middleware for error handling
+│   │
+│   ├── models/                # Data models (Mongoose schemas)
+│   │   ├── userModel.ts        # User model
+│   │   ├── mechanicModel.ts     # Mechanic model
+│   │   └── serviceModel.ts      # Service model
+│   │
+│   ├── routes/                # Route definitions
+│   │   ├── authRoutes.ts        # Authentication routes
+│   │   ├── userRoutes.ts        # User routes
+│   │   ├── mechanicRoutes.ts     # Mechanic routes
+│   │   └── serviceRoutes.ts      # Service routes
+│   │
+│   ├── services/              # Business logic services
+│   │   ├── authService.ts       # Authentication logic
+│   │   ├── userService.ts       # User-related logic
+│   │   ├── mechanicService.ts    # Mechanic-related logic
+│   │   └── serviceService.ts     # Service-related logic
+│   │
+│   ├── utils/                 # Utility functions and helpers
+│   │   ├── logger.ts            # Logging utility
+│   │   └── validator.ts         # Input validation functions
+│   │
+│   ├── app.ts                 # Main application file
+│   └── server.ts              # Server setup and initialization
+│
+├── tests/                     # Testing files
+│   ├── unit/                   # Unit tests
+│   │   ├── auth.test.ts         # Authentication tests
+│   │   ├── user.test.ts         # User tests
+│   │   ├── mechanic.test.ts      # Mechanic tests
+│   │   └── service.test.ts       # Service tests
+│   │
+│   └── integration/            # Integration tests
+│       ├── auth.integration.test.ts # Authentication integration tests
+│       ├── user.integration.test.ts # User integration tests
+│       ├── mechanic.integration.test.ts # Mechanic integration tests
+│       └── service.integration.test.ts # Service integration tests
+│
+├── .env                        # Environment variables
+├── .gitignore                  # Git ignore file
+├── package.json                # Project dependencies and scripts
+├── package-lock.json           # Exact versioning for dependencies
+├── tsconfig.json               # TypeScript configuration
+├── openAPI.yaml                # API documentation in OpenAPI format
+├── generateJwtSecret.js        # Script to generate JWT_SECRET
+├── project_structure.txt        # Project structure documentation
+└── README.md                   # Project documentation
