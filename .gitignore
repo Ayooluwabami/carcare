@@ -1,0 +1,43 @@
+# Node.js dependencies
+/node_modules/
+
+# Environment variables file
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Build output
+dist
+build
+
+# TypeScript files
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# IDE and editor-specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# Docker files
+*.dockerfile
+docker-compose.override.yml
+
+# Ignore sensitive files
+generateJwtSecret.js
+
+
+carCareReadME.md
+project_structure.txt
