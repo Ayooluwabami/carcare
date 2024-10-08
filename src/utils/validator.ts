@@ -1,4 +1,4 @@
-import { body, validationResult } from 'express-validator';
+import { body, validationResult, ValidationChain } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 // Function to handle validation results
@@ -11,7 +11,7 @@ const handleValidationResult = (req: Request, res: Response, next: NextFunction)
 };
 
 // Middleware for validating user registration input
-export const validateUserRegistration = [
+export const validateUserRegistration: ValidationChain[] = [
   body('username')
     .isString()
     .isLength({ min: 3, max: 30 })
@@ -23,11 +23,10 @@ export const validateUserRegistration = [
     .isString()
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long.'),
-  handleValidationResult, 
 ];
 
 // Middleware for validating user login input
-export const validateUserLogin = [
+export const validateUserLogin: ValidationChain[] = [
   body('email')
     .isEmail()
     .withMessage('Must be a valid email address.'),
@@ -35,5 +34,8 @@ export const validateUserLogin = [
     .isString()
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long.'),
-  handleValidationResult, 
 ];
+
+// Middleware to handle validation result
+export const validateUserRegistrationResult = handleValidationResult;
+export const validateUserLoginResult = handleValidationResult;
