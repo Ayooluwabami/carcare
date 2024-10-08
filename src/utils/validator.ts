@@ -7,7 +7,7 @@ const handleValidationResult = (req: Request, res: Response, next: NextFunction)
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  next(); // Proceed if no validation errors
+  next();
 };
 
 // Middleware for validating user registration input
@@ -23,7 +23,7 @@ export const validateUserRegistration = [
     .isString()
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long.'),
-  handleValidationResult, // Handle validation results
+  handleValidationResult, 
 ];
 
 // Middleware for validating user login input
@@ -35,5 +35,5 @@ export const validateUserLogin = [
     .isString()
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long.'),
-  handleValidationResult, // Handle validation results
+  handleValidationResult, 
 ];

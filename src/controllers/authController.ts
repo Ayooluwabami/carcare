@@ -30,11 +30,12 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
     // Generate a JWT token
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET || 'your_jwt_secret', {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h', // Use environment variable for expiration
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h', 
     });
 
     res.status(201).json({ token, user: { id: newUser._id, username, email } });
   } catch (error: any) {
+    console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -48,30 +49,30 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ email });
     if (!user) {
       res.status(400).json({ message: 'Invalid credentials' });
-      return; // Explicitly return
+      return; 
     }
 
     // Compare the password with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       res.status(400).json({ message: 'Invalid credentials' });
-      return; // Explicitly return
+      return; 
     }
 
     // Generate a JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your_jwt_secret', {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h', // Use environment variable for expiration
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h', 
     });
 
     res.status(200).json({ token, user: { id: user._id, username: user.username, email } });
   } catch (error: any) {
+    console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
 // Logout a user (invalidates the token)
 export const logoutUser = async (req: Request, res: Response): Promise<void> => {
-  // In this implementation, we'll just send a response since JWT tokens are stateless
   res.status(200).json({ message: 'Logout successful' });
 };
 
@@ -81,18 +82,18 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 
   if (!token) {
     res.status(401).json({ message: 'Token is required' });
-    return; // Explicitly return
+    return; 
   }
 
   jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', (err: any, decoded: any) => {
     if (err) {
       res.status(403).json({ message: 'Invalid token' });
-      return; // Explicitly return
+      return; 
     }
 
     // Generate a new token
     const newToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET || 'your_jwt_secret', {
-      expiresIn: process.env.JWT_EXPIRES_IN || '1h', // Use environment variable for expiration
+      expiresIn: process.env.JWT_EXPIRES_IN || '1h', 
     });
 
     res.status(200).json({ token: newToken });
