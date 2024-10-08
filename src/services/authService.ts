@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/userModel';
-import { Request } from 'express';
-import { ILoginResponse } from '../interfaces/loginResponseInterface'; // Define your own interface for the login response
+import User, { IUser } from '../models/userModel';
+import { ILoginResponse } from '../interfaces/loginResponseInterface';
+import { Document } from 'mongoose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; // Use environment variable for security
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret'; 
 
 // Register a new user
-export const registerUser = async (email: string, password: string): Promise<User> => {
+export const registerUser = async (email: string, password: string): Promise<IUser & Document> => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = new User({ email, password: hashedPassword });
   return await newUser.save();
@@ -23,13 +23,6 @@ export const loginUser = async (email: string, password: string): Promise<ILogin
 
   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
   return { user, token };
-};
-
-// Logout a user
-export const logoutUser = (req: Request): void => {
-  req.logout((err) => {
-    if (err) throw new Error('Logout failed');
-  });
 };
 
 // Refresh token

@@ -1,9 +1,9 @@
-import { Mechanic } from '../models/mechanicModel';
-import { IUpdateMechanicInput } from '../interfaces/updateMechanicInterface'; 
-import { Types } from 'mongoose';
+import Mechanic, { Mechanic as MechanicType } from '../models/mechanicModel';
+import { IUpdateMechanicInput } from '../interfaces/updateMechanicInterface';
+import { Types, Document } from 'mongoose';
 
 // Get a mechanic by ID
-export const getMechanicById = async (mechanicId: string): Promise<Mechanic | null> => {
+export const getMechanicById = async (mechanicId: string): Promise<(MechanicType & Document) | null> => {
   if (!Types.ObjectId.isValid(mechanicId)) {
     throw new Error('Invalid mechanic ID');
   }
@@ -11,13 +11,13 @@ export const getMechanicById = async (mechanicId: string): Promise<Mechanic | nu
 };
 
 // Add a new mechanic
-export const addMechanic = async (mechanicData: Partial<Mechanic>): Promise<Mechanic> => {
+export const addMechanic = async (mechanicData: Partial<MechanicType>): Promise<MechanicType & Document> => {
   const newMechanic = new Mechanic(mechanicData);
   return await newMechanic.save();
 };
 
 // Update mechanic profile
-export const updateMechanic = async (mechanicId: string, updateData: IUpdateMechanicInput): Promise<Mechanic | null> => {
+export const updateMechanic = async (mechanicId: string, updateData: IUpdateMechanicInput): Promise<(MechanicType & Document) | null> => {
   if (!Types.ObjectId.isValid(mechanicId)) {
     throw new Error('Invalid mechanic ID');
   }
@@ -25,14 +25,14 @@ export const updateMechanic = async (mechanicId: string, updateData: IUpdateMech
 };
 
 // Delete a mechanic
-export const deleteMechanic = async (mechanicId: string): Promise<Mechanic | null> => {
+export const deleteMechanic = async (mechanicId: string): Promise<(MechanicType & Document) | null> => {
   if (!Types.ObjectId.isValid(mechanicId)) {
     throw new Error('Invalid mechanic ID');
   }
   return await Mechanic.findByIdAndDelete(mechanicId).exec();
 };
 
-// Get all mechanics (optional, based on your requirements)
-export const getAllMechanics = async (): Promise<Mechanic[]> => {
+// Get all mechanics 
+export const getAllMechanics = async (): Promise<(MechanicType & Document)[]> => {
   return await Mechanic.find().exec();
 };

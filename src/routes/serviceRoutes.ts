@@ -1,12 +1,12 @@
-import { Router, Request, Response, RequestHandler } from 'express';
+import { Router } from 'express';
 import {
   getAllServices,
   getServiceById,
   createService,
   updateService,
   deleteService,
-} from '../controllers/serviceController'; 
-import authMiddleware from '../middleware/authMiddleware'; 
+} from '../controllers/serviceController';
+import authMiddleware from '../middleware/authMiddleware';
 import { validateObjectId } from '../middleware/validateObjectId';
 import { validateServiceInput } from '../middleware/validateServiceInput';
 
@@ -19,7 +19,7 @@ router.get('/', getAllServices);
 router.get('/:id', validateObjectId, getServiceById);
 
 // Create a New Service Route
-router.post('/', [authMiddleware, validateServiceInput, createService]);
+router.post('/', authMiddleware, validateServiceInput, createService);
 
 // Update a Service Route
 router.put('/:id', authMiddleware, validateObjectId, updateService);

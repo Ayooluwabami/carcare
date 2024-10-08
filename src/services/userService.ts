@@ -1,9 +1,9 @@
-import { User } from '../models/userModel';
-import { IUpdateUserInput } from '../interfaces/updateUserInterface'; // Define your own interface for the update input
-import { Types } from 'mongoose';
+import User, { IUser } from '../models/userModel';
+import { IUpdateUserInput } from '../interfaces/updateUserInterface';
+import { Types, Document } from 'mongoose';
 
 // Get a user by ID
-export const getUserById = async (userId: string): Promise<User | null> => {
+export const getUserById = async (userId: string): Promise<IUser & Document | null> => {
   if (!Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid user ID');
   }
@@ -11,7 +11,7 @@ export const getUserById = async (userId: string): Promise<User | null> => {
 };
 
 // Update user profile
-export const updateUser = async (userId: string, updateData: IUpdateUserInput): Promise<User | null> => {
+export const updateUser = async (userId: string, updateData: IUpdateUserInput): Promise<IUser & Document | null> => {
   if (!Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid user ID');
   }
@@ -19,7 +19,7 @@ export const updateUser = async (userId: string, updateData: IUpdateUserInput): 
 };
 
 // Delete a user
-export const deleteUser = async (userId: string): Promise<User | null> => {
+export const deleteUser = async (userId: string): Promise<IUser & Document | null> => {
   if (!Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid user ID');
   }
@@ -27,6 +27,6 @@ export const deleteUser = async (userId: string): Promise<User | null> => {
 };
 
 // Get all users (optional, based on your requirements)
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async (): Promise<(IUser & Document)[]> => {
   return await User.find().exec();
 };

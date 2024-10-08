@@ -2,19 +2,19 @@ import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 // Define the User interface extending Mongoose Document
-export interface User extends Document {
+export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
   isActive: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  firstName?: string; // Optional field
-  lastName?: string;  // Optional field
-  createdAt?: Date;   // Creation timestamp
+  firstName?: string; 
+  lastName?: string; 
+  createdAt?: Date; 
 }
 
 // Create the User schema
-const userSchema: Schema<User> = new Schema(
+const userSchema: Schema<IUser> = new Schema(
   {
     username: {
       type: String,
@@ -54,7 +54,7 @@ const userSchema: Schema<User> = new Schema(
 );
 
 // Hash the password before saving the user
-userSchema.pre<User>('save', async function (next) {
+userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
@@ -66,11 +66,11 @@ userSchema.pre<User>('save', async function (next) {
 });
 
 // Method to compare password
-userSchema.methods.comparePassword = async function (this: User, candidatePassword: string): Promise<boolean> {
+userSchema.methods.comparePassword = async function (this: IUser, candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Create the User model
-const UserModel = mongoose.model<User>('User', userSchema);
+const UserModel = mongoose.model<IUser>('User', userSchema);
 
 export default UserModel;

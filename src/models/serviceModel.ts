@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define the Service interface extending Mongoose Document
-export interface Service extends Document {
+export interface IService extends Document {
   mechanicId: mongoose.Types.ObjectId; // Reference to the mechanic
   name: string;                         // Name of the service
   description: string;                  // Description of the service
@@ -12,7 +12,7 @@ export interface Service extends Document {
 }
 
 // Create the Service schema
-const serviceSchema: Schema<Service> = new Schema(
+const serviceSchema: Schema<IService> = new Schema(
   {
     mechanicId: {
       type: Schema.Types.ObjectId, // Use Schema.Types.ObjectId here
@@ -52,6 +52,6 @@ const serviceSchema: Schema<Service> = new Schema(
 );
 
 // Create the Service model
-const ServiceModel = mongoose.model<Service>('Service', serviceSchema);
+const ServiceModel = mongoose.model<IService>('Service', serviceSchema);
 
 export default ServiceModel;
