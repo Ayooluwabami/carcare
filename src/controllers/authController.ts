@@ -48,14 +48,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).json({ message: 'Invalid credentials' });
+      res.status(400).json({ message: 'User not found' });
       return; 
     }
 
     // Compare the password with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(400).json({ message: 'Invalid credentials' });
+      res.status(400).json({ message: 'Incorrect password' });
       return; 
     }
 
