@@ -8,9 +8,9 @@ export interface IUser extends Document {
   password: string;
   isActive: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  firstName?: string; 
-  lastName?: string; 
-  createdAt?: Date; 
+  firstName?: string;
+  lastName?: string;
+  createdAt?: Date;
 }
 
 // Create the User schema
@@ -58,7 +58,7 @@ userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
-  
+
   // Hash the password with bcrypt
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
