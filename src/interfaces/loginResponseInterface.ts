@@ -1,6 +1,10 @@
-import { IUser } from '../models/userModel'; 
+import { IUser } from '../models/userModel';
 
 export interface ILoginResponse {
-  user: IUser;     
-  token: string;       
+    user: {
+        id: string;
+        username: string;
+        email: string;
+    };
+    token: string;
 }

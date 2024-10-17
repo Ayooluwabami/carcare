@@ -22,20 +22,18 @@ const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunc
     return;
   }
 
-  // Explicitly specify the types for the jwt.verify callback
   jwt.verify(token, secret, { algorithms: ['HS256'] }, (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
     if (err) {
       logger.error('Failed to authenticate token.', { error: err.message });
-      res.status(401).json({ message: 'Failed to authenticate token.' });
-      return;
+      return res.status(401).json({ message: 'Failed to authenticate token.' });
     }
 
     if (decoded && typeof decoded === 'object' && 'id' in decoded) {
       req.userId = decoded.id; // Assign the userId to the request
-      next(); // Pass control to the next middleware/handler
+      return next(); // Pass control to the next middleware/handler
     } else {
       logger.warn('Decoded token did not contain an ID.');
-      res.status(401).json({ message: 'Token is invalid.' });
+      return res.status(401).json({ message: 'Token is invalid.' });
     }
   });
 };

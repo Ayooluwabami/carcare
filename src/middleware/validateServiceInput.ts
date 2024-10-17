@@ -10,9 +10,14 @@ export const validateServiceInput: RequestHandler[] = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      res.status(400).json({
+        status: 'error',
+        statusCode: 400,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
       return;
     }
-    next();
+    next(); // Proceed if there are no validation errors
   },
 ];

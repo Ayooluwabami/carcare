@@ -7,6 +7,7 @@ import mechanicRoutes from './routes/mechanicRoutes';
 import serviceRoutes from './routes/serviceRoutes';
 import errorHandler from './middleware/errorMiddleware';
 import logger from './utils/logger';
+import { sendErrorResponse } from './utils/responseUtil';
 
 dotenv.config();
 
@@ -24,12 +25,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI!)
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  logger.error('MONGODB_URI is not defined in environment variables.');
+  process.exit(1); // Exit if the environment variable is not set
+}
+
+mongoose.connect(mongoUri)
   .then(() => {
-    console.log('Connected to MongoDB');
+    logger.info('Connected to MongoDB');
   })
   .catch(err => {
-    console.error('MongoDB connection error:', err);
+    logger.error('MongoDB connection error:', err);
     process.exit(1); // Exit the application on connection error
   });
 
@@ -44,18 +51,18 @@ app.use(errorHandler);
 
 // 404 Not Found handler
 app.use((req: Request, res: Response) => {
-  res.status(404).json({ message: 'Not Found' });
+  sendErrorResponse(res, 404, 'Not Found');
 });
 
 // Graceful shutdown
 const shutdown = async () => {
-  console.log('Shutting down gracefully...');
+  logger.info('Shutting down gracefully...');
   try {
     await mongoose.connection.close(); // Wait for connection to close
-    console.log('MongoDB connection closed.');
+    logger.info('MongoDB connection closed.');
     process.exit(0); // Exit the application
   } catch (error) {
-    console.error('Error closing MongoDB connection:', error);
+    logger.error('Error closing MongoDB connection:', error);
     process.exit(1); // Exit with failure
   }
 };

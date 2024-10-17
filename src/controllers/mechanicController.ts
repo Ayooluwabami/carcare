@@ -1,79 +1,102 @@
 import { Request, Response, NextFunction } from 'express';
-import MechanicModel from '../models/mechanicModel'; 
+import mongoose from 'mongoose';
+import * as MechanicService from '../services/mechanicService'; 
+import { sendSuccessResponse, sendErrorResponse } from '../utils/responseUtil';
+import logger from '../utils/logger';
+
+interface AddMechanicRequestBody {
+    userId: string;
+    specialization: string;
+    experienceYears?: number;
+    available?: boolean;
+}
 
 // Add a new mechanic
-export const addMechanic = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId, specialization, experienceYears, available } = req.body; 
-  try {
-    // Input validation (example)
-    if (!userId || !specialization) {
-      return res.status(400).json({ message: 'User ID and specialization are required.' });
-    }
+export const addMechanic = async (req: Request<{}, {}, AddMechanicRequestBody>, res: Response, next: NextFunction): Promise<void> => {
+    const { userId, specialization, experienceYears, available } = req.body;
 
-    const newMechanic = new MechanicModel({ userId, specialization, experienceYears, available });
-    await newMechanic.save();
-    return res.status(201).json(newMechanic);
-  } catch (error: any) {
-    next(error); // Pass errors to the error handling middleware
-  }
+    try {
+        if (!userId || !specialization) {
+            return sendErrorResponse(res, 400, 'User ID and specialization are required.');
+        }
+
+        // Check if userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return sendErrorResponse(res, 400, 'Invalid User ID format.');
+        }
+
+        const newMechanic = await MechanicService.addMechanic({ userId: new mongoose.Types.ObjectId(userId), specialization, experienceYears, available });
+        sendSuccessResponse(res, 201, 'Mechanic added successfully', newMechanic);
+    } catch (error: any) {
+        logger.error(`Error adding mechanic: ${error.message}`, { stack: error.stack });
+        sendErrorResponse(res, error.status || 500, 'An error occurred while adding the mechanic.');
+        next(error);
+    }
 };
 
 // Get mechanic profile by ID
-export const getMechanicProfile = async (req: Request, res: Response, next: NextFunction) => {
-  const mechanicId = req.params.id;
+export const getMechanicProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const id = req.params.id;
 
-  try {
-    const mechanic = await MechanicModel.findById(mechanicId);
-    if (!mechanic) {
-      return res.status(404).json({ message: 'Mechanic not found' });
+    try {
+        const mechanic = await MechanicService.getMechanicById(id);
+        if (!mechanic) {
+            return sendErrorResponse(res, 404, 'Mechanic not found.');
+        }
+
+        sendSuccessResponse(res, 200, 'Mechanic profile retrieved successfully', mechanic);
+    } catch (error: any) {
+        logger.error(`Error retrieving mechanic profile: ${error.message}`, { stack: error.stack });
+        sendErrorResponse(res, error.status || 500, 'An error occurred while retrieving the mechanic profile.');
+        next(error);
     }
-    return res.status(200).json(mechanic);
-  } catch (error: any) {
-    next(error); // Pass errors to the error handling middleware
-  }
 };
 
 // Update mechanic profile
-export const updateMechanicProfile = async (req: Request, res: Response, next: NextFunction) => {
-  const mechanicId = req.params.id;
-  const { specialization, experienceYears, available } = req.body; 
+export const updateMechanicProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const mechanicId = req.params.id;
+    const { specialization, experienceYears, available } = req.body;
 
-  try {
-    const updatedMechanic = await MechanicModel.findByIdAndUpdate(
-      mechanicId,
-      { specialization, experienceYears, available },
-      { new: true }
-    );
-    if (!updatedMechanic) {
-      return res.status(404).json({ message: 'Mechanic not found' });
+    try {
+        const updatedMechanic = await MechanicService.updateMechanic(mechanicId, { specialization, experienceYears, available });
+        if (!updatedMechanic) {
+            return sendErrorResponse(res, 404, 'Mechanic not found.');
+        }
+
+        sendSuccessResponse(res, 200, 'Mechanic profile updated successfully', updatedMechanic);
+    } catch (error: any) {
+        logger.error(`Error updating mechanic profile: ${error.message}`, { stack: error.stack });
+        sendErrorResponse(res, error.status || 500, 'An error occurred while updating the mechanic profile.');
+        next(error);
     }
-    return res.status(200).json(updatedMechanic);
-  } catch (error: any) {
-    next(error); // Pass errors to the error handling middleware
-  }
 };
 
 // Delete mechanic account
-export const deleteMechanicAccount = async (req: Request, res: Response, next: NextFunction) => {
-  const mechanicId = req.params.id;
+export const deleteMechanicAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const id = req.params.id;
 
-  try {
-    const deletedMechanic = await MechanicModel.findByIdAndDelete(mechanicId);
-    if (!deletedMechanic) {
-      return res.status(404).json({ message: 'Mechanic not found' });
+    try {
+        const deletedMechanic = await MechanicService.deleteMechanic(id);
+        if (!deletedMechanic) {
+            return sendErrorResponse(res, 404, 'Mechanic not found.');
+        }
+
+        sendSuccessResponse(res, 200, 'Mechanic account deleted successfully.');
+    } catch (error: any) {
+        logger.error(`Error deleting mechanic account: ${error.message}`, { stack: error.stack });
+        sendErrorResponse(res, error.status || 500, 'An error occurred while deleting the mechanic account.');
+        next(error);
     }
-    return res.status(200).json({ message: 'Mechanic account deleted successfully' });
-  } catch (error: any) {
-    next(error); // Pass errors to the error handling middleware
-  }
 };
 
 // Get all mechanics
-export const getAllMechanics = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const mechanics = await MechanicModel.find();
-    res.status(200).json(mechanics);
-  } catch (error: any) {
-    next(error); // Pass errors to the error handling middleware
-  }
+export const getAllMechanics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const mechanics = await MechanicService.getAllMechanics();
+        sendSuccessResponse(res, 200, 'Mechanics retrieved successfully', mechanics);
+    } catch (error: any) {
+        logger.error(`Error retrieving mechanics: ${error.message}`, { stack: error.stack });
+        sendErrorResponse(res, error.status || 500, 'An error occurred while retrieving mechanics.');
+        next(error);
+    }
 };

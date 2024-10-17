@@ -2,37 +2,19 @@ import { Router, Request, Response } from 'express';
 import { validateUserRegistration } from '../middleware/validateUserRegistration';
 import { validateUserLogin } from '../middleware/validateUserLogin';
 import { registerUser, loginUser, refreshToken } from '../controllers/authController';
+import { sendErrorResponse, sendSuccessResponse } from '../utils/responseUtil';
 
 const router = Router();
 
-// Utility function to send error responses
-const sendErrorResponse = (res: Response, statusCode: number, message: string) => {
-  res.status(statusCode).json({ message });
-};
+// Centralized async handler
+const asyncHandler = (fn: Function) => (req: Request, res: Response) =>
+  Promise.resolve(fn(req, res)).catch((error) => sendErrorResponse(res, 500, error.message));
 
 // User Registration Route
-router.post('/register', 
-  validateUserRegistration, 
-  async (req: Request, res: Response) => {
-    try {
-      await registerUser(req, res);
-    } catch (error) {
-      sendErrorResponse(res, 500, 'Registration failed');
-    }
-  }
-);
+router.post('/register', validateUserRegistration, asyncHandler(registerUser));
 
 // User Login Route
-router.post('/login', 
-  validateUserLogin, 
-  async (req: Request, res: Response) => {
-    try {
-      await loginUser(req, res);
-    } catch (error) {
-      sendErrorResponse(res, 500, 'Login failed');
-    }
-  }
-);
+router.post('/login', validateUserLogin, asyncHandler(loginUser));
 
 // Refresh Token Route
 router.post('/refresh-token', async (req: Request, res: Response) => {
@@ -43,8 +25,8 @@ router.post('/refresh-token', async (req: Request, res: Response) => {
   }
 
   try {
-    const newToken = await refreshToken(token); 
-    res.status(200).json({ token: newToken });
+    const newToken = await refreshToken(token, res);
+    sendSuccessResponse(res, 200, 'Token refreshed successfully', { token: newToken });
   } catch (error) {
     sendErrorResponse(res, 500, 'Token refresh failed');
   }

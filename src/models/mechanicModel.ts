@@ -1,20 +1,20 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define the Mechanic interface extending Mongoose Document
-export interface Mechanic extends Document {
-  userId: mongoose.Types.ObjectId; // Reference to the user
-  specialization: string;          // Mechanic's specialization
-  experienceYears: number;         // Years of experience
-  available: boolean;              // Availability status
-  createdAt?: Date;                // Creation timestamp
-  updatedAt?: Date;                // Update timestamp
+export interface IMechanic extends Document {
+  userId: mongoose.Types.ObjectId; 
+  specialization: string;           
+  experienceYears: number;        
+  available: boolean;             
+  createdAt?: Date;               
+  updatedAt?: Date;                
 }
 
 // Create the Mechanic schema
-const mechanicSchema: Schema<Mechanic> = new Schema(
+const mechanicSchema: Schema<IMechanic> = new Schema(
   {
     userId: {
-      type: Schema.Types.ObjectId, // Correctly using Schema.Types.ObjectId
+      type: Schema.Types.ObjectId, 
       required: true,
       ref: 'User', // Reference to the User model
       validate: {
@@ -32,11 +32,15 @@ const mechanicSchema: Schema<Mechanic> = new Schema(
     experienceYears: {
       type: Number,
       required: true,
-      min: [0, 'Experience years must be a non-negative number'], // Custom error message
+      validate: {
+        validator: (value: number) => Number.isInteger(value) && value >= 0,
+        message: 'Experience years must be a non-negative integer.',
+      },
     },
     available: {
       type: Boolean,
-      default: true, // Default to available
+      required: true, 
+      default: true,   
     },
   },
   {
@@ -45,8 +49,7 @@ const mechanicSchema: Schema<Mechanic> = new Schema(
 );
 
 // Optional: Add pre-save hook to validate experienceYears
-mechanicSchema.pre<Mechanic>('save', function(next) {
-  // `this` is of type Mechanic now
+mechanicSchema.pre<IMechanic>('save', function(next) {
   if (this.experienceYears < 0) {
     return next(new Error('Experience years cannot be negative.'));
   }
@@ -54,6 +57,6 @@ mechanicSchema.pre<Mechanic>('save', function(next) {
 });
 
 // Create the Mechanic model
-const MechanicModel = mongoose.model<Mechanic>('Mechanic', mechanicSchema);
+const MechanicModel = mongoose.model<IMechanic>('Mechanic', mechanicSchema);
 
 export default MechanicModel;

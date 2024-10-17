@@ -2,29 +2,38 @@ import winston from 'winston';
 
 // Create a logger instance
 const logger = winston.createLogger({
-  level: 'info', // Set the default logging level
-  format: winston.format.combine(
-    winston.format.timestamp(), // Include a timestamp with each log
-    winston.format.json() // Log messages in JSON format
-  ),
-  transports: [
-    // Log messages to the console
-    new winston.transports.Console({
-      format: winston.format.simple(), // Include a timestamp with each log
-    }),
-    // Optional: Log messages to a file
-    new winston.transports.File({
-      filename: 'error.log', // Log errors to a file
-      level: 'error', // Only log error level messages to this file
-    }),
-  ],
+    level: 'info', 
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        // Log messages to the console
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple() 
+            ),
+        }),
+        // Optional: Log messages to a file
+        new winston.transports.File({
+            filename: 'error.log',
+            level: 'error', 
+            handleExceptions: true, 
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.json() 
+            ),
+        }),
+    ],
+    exitOnError: false, // Prevent Winston from exiting on handled exceptions
 });
 
 // Log message methods
 ['info', 'error', 'warn', 'debug'].forEach((level) => {
-  (logger as any)[level] = (message: string) => {
-    logger.log(level, message);
-  };
+    (logger as any)[level] = (message: string, meta?: any) => {
+        logger.log(level, message, { meta }); // Optional meta for additional data
+    };
 });
 
 export default logger;

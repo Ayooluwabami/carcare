@@ -2,26 +2,24 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define the Service interface extending Mongoose Document
 export interface IService extends Document {
-  mechanicId: mongoose.Types.ObjectId; // Reference to the mechanic
-  name: string;                         // Name of the service
-  description: string;                  // Description of the service
-  price: number;                        // Price of the service
-  duration: number;                     // Duration of the service in minutes
-  createdAt?: Date;                     // Creation timestamp
-  updatedAt?: Date;                     // Update timestamp
+  mechanicId: mongoose.Types.ObjectId; 
+  name: string;                       
+  description: string;                
+  price: number;                        
+  duration: number;                    
+  createdAt?: Date;                   
+  updatedAt?: Date;                  
 }
 
 // Create the Service schema
 const serviceSchema: Schema<IService> = new Schema(
   {
     mechanicId: {
-      type: Schema.Types.ObjectId, // Use Schema.Types.ObjectId here
+      type: Schema.Types.ObjectId,
       required: true,
       ref: 'Mechanic', // Reference to the Mechanic model
       validate: {
-        validator: (value: mongoose.Types.ObjectId) => {
-          return mongoose.Types.ObjectId.isValid(value);
-        },
+        validator: (value: mongoose.Types.ObjectId) => mongoose.Types.ObjectId.isValid(value),
         message: 'Invalid mechanic ID',
       },
     },
@@ -38,12 +36,18 @@ const serviceSchema: Schema<IService> = new Schema(
     price: {
       type: Number,
       required: true,
-      min: [0, 'Price must be a non-negative number'], // Custom error message
+      validate: {
+        validator: (value: number) => value >= 0,
+        message: 'Price must be a non-negative number.',
+      },
     },
     duration: {
       type: Number,
       required: true,
-      min: [1, 'Duration must be at least 1 minute'], // Custom error message
+      validate: {
+        validator: (value: number) => value >= 1,
+        message: 'Duration must be at least 1 minute.',
+      },
     },
   },
   {

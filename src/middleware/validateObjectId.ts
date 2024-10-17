@@ -6,10 +6,14 @@ export const validateObjectId = (req: Request, res: Response, next: NextFunction
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    logger.error(`Invalid ObjectId: ${id}`);
-    res.status(400).json({ message: 'Invalid ID' });
+    logger.error(`Invalid ObjectId provided: ${id} in request to ${req.originalUrl}`);
+    res.status(400).json({
+      status: 'error',
+      statusCode: 400,
+      message: 'Invalid ID format',
+    });
     return;
   }
 
-  next();
+  next(); // Pass control to the next middleware
 };

@@ -1,75 +1,60 @@
 import { Request, Response } from 'express';
-import User from '../models/userModel';
-
-// Define an interface for the request body
-interface UserProfileRequest extends Request {
-  body: {
-    username?: string; 
-    email?: string;
-  };
-}
+import * as userService from '../services/userService';
+import { sendSuccessResponse, sendErrorResponse } from '../utils/responseUtil';
 
 // Get user profile by ID
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.params.id;
+    const userId = req.params.id;
 
-  try {
-    const user = await User.findById(userId).select('-password'); 
-    if (!user) {
-      res.status(404).json({ message: 'User not found' });
-      return; 
+    try {
+        const user = await userService.getUserById(userId);
+        if (!user) {
+            sendErrorResponse(res, 404, 'User not found');
+            return;
+        }
+        sendSuccessResponse(res, 200, 'User profile retrieved successfully', { user });
+    } catch (error: any) {
+        sendErrorResponse(res, error.status || 500, 'Failed to retrieve user profile');
     }
-    res.status(200).json({ user }); 
-  } catch (error: any) {
-    console.error('Error fetching user profile:', error.message); 
-    res.status(500).json({ message: 'Server error', error: error.message }); 
-  }
 };
 
-
 // Update user profile
-export const updateUserProfile = async (req: UserProfileRequest, res: Response): Promise<void> => {
-  const userId = req.params.id; 
-  const { username, email } = req.body;
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
+    const { username, email, password } = req.body;
 
-  try {
-    // Input validation
-    if (!username || !email) {
-      res.status(400).json({ message: 'Username and email are required.' });
-      return; // Exit the function after sending the response
+    try {
+        if (!username || !email) {
+            sendErrorResponse(res, 400, 'Username and email are required.');
+            return;
+        }
+
+        // Pass only the necessary fields
+        const updatedUser = await userService.updateUser(userId, { username, email, password });
+        if (!updatedUser) {
+            sendErrorResponse(res, 404, 'User not found');
+            return;
+        }
+
+        sendSuccessResponse(res, 200, 'User profile updated successfully', { user: updatedUser });
+    } catch (error: any) {
+        sendErrorResponse(res, error.status || 500, 'Failed to update user profile');
     }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { username, email },
-      { new: true, runValidators: true } 
-    ).select('-password');
-
-    if (!updatedUser) {
-      res.status(404).json({ message: 'User not found' });
-      return; 
-    }
-
-    res.status(200).json({ user: updatedUser }); // Send updated user data
-  } catch (error: any) {
-    console.error('Error updating user profile:', error.message); 
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
 };
 
 // Delete user account
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.params.id; 
+    const userId = req.params.id;
 
-  try {
-    const deletedUser = await User.findByIdAndDelete(userId);
-    if (!deletedUser) {
-      res.status(404).json({ message: 'User not found' });
-      return; 
+    try {
+        const deletedUser = await userService.deleteUser(userId);
+        if (!deletedUser) {
+            sendErrorResponse(res, 404, 'User not found');
+            return;
+        }
+
+        sendSuccessResponse(res, 200, 'User account deleted successfully');
+    } catch (error: any) {
+        sendErrorResponse(res, error.status || 500, 'Failed to delete user account');
     }
-    res.status(200).json({ message: 'User account deleted successfully' });
-  } catch (error: any) {
-    console.error('Error deleting user account:', error.message); 
-    res.status(500).json({ message: 'Server error', error: error.message }); 
-  }
 };
