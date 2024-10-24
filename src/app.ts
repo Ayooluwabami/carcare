@@ -5,7 +5,7 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import mechanicRoutes from './routes/mechanicRoutes';
 import serviceRoutes from './routes/serviceRoutes';
-import errorHandler from './middleware/errorMiddleware';
+import { errorMiddleware } from './middleware/errorMiddleware';
 import logger from './utils/logger';
 import { sendErrorResponse } from './utils/responseUtil';
 
@@ -47,7 +47,7 @@ app.use('/api/mechanics', mechanicRoutes);
 app.use('/api/services', serviceRoutes);
 
 // Error handling middleware
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 // 404 Not Found handler
 app.use((req: Request, res: Response) => {

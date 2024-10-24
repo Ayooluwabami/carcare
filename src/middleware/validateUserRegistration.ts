@@ -2,11 +2,6 @@ import { check, validationResult } from 'express-validator';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 export const validateUserRegistration: RequestHandler[] = [
-  check('username')
-    .isString()
-    .withMessage('Username must be a string.')
-    .notEmpty()
-    .withMessage('Username is required.'),
   check('email')
     .isEmail()
     .withMessage('Enter a valid email.'),

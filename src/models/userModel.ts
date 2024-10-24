@@ -3,26 +3,17 @@ import bcrypt from 'bcryptjs';
 
 // Define the User interface extending Mongoose Document
 export interface IUser extends Document {
-  username: string;
   email: string;
   password: string;
   isActive: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  firstName?: string;
-  lastName?: string;
   createdAt?: Date;
+  username: string; 
 }
 
 // Create the User schema
 const userSchema: Schema<IUser> = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
     email: {
       type: String,
       required: true,
@@ -39,15 +30,11 @@ const userSchema: Schema<IUser> = new Schema(
       type: Boolean,
       default: true,
     },
-    firstName: {
+    username: {
       type: String,
+      unique: true,
+      lowercase: true,
       trim: true,
-      default: null,
-    },
-    lastName: {
-      type: String,
-      trim: true,
-      default: null,
     },
   },
   {
@@ -55,13 +42,16 @@ const userSchema: Schema<IUser> = new Schema(
   }
 );
 
-// Hash the password before saving the user
+// Extract username from email and hash password before saving the user
 userSchema.pre<IUser>('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
+  // Derive username from the email address
+  this.username = this.email.split('@')[0]; 
+
+  // Check if password is modified and hash it
+  if (this.isModified('password')) {
+    this.password = await hashPassword(this.password);
   }
 
-  this.password = await hashPassword(this.password);
   next();
 });
 
@@ -73,11 +63,7 @@ const hashPassword = async (password: string): Promise<string> => {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function (this: IUser, candidatePassword: string): Promise<boolean> {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw new Error('Password comparison failed.');
-  }
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Create the User model

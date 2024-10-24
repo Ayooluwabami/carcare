@@ -19,9 +19,13 @@ components:
           type: string
           minLength: 3
           maxLength: 30
+          readOnly: true
         email:
           type: string
           format: email
+      required:
+        - email
+
     Mechanic:
       type: object
       properties:
@@ -31,6 +35,7 @@ components:
           type: string
         specialization:
           type: string
+
     Service:
       type: object
       properties:
@@ -40,6 +45,7 @@ components:
           type: string
         description:
           type: string
+
     Error:
       type: object
       properties:
@@ -67,10 +73,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+              required:
+                - email
+                - password
       responses:
         '201':
           description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: Validation error
           content:
@@ -94,9 +114,19 @@ paths:
                 password:
                   type: string
                   minLength: 6
+              required:
+                - email
+                - password
       responses:
         '200':
           description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
         '400':
           description: Validation error
           content:
@@ -125,10 +155,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+              required:
+                - email
+                - password
       responses:
         '201':
           description: User added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
           description: Validation error
           content:
@@ -174,10 +218,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+              required:
+                - email
+                - password
       responses:
         '200':
           description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '404':
           description: User not found
           content:
@@ -233,6 +291,10 @@ paths:
       responses:
         '201':
           description: Mechanic added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mechanic'
         '400':
           description: Validation error
           content:
@@ -282,6 +344,10 @@ paths:
       responses:
         '200':
           description: Mechanic updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mechanic'
         '404':
           description: Mechanic not found
           content:
@@ -337,6 +403,10 @@ paths:
       responses:
         '201':
           description: Service added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
         '400':
           description: Validation error
           content:
@@ -386,6 +456,10 @@ paths:
       responses:
         '200':
           description: Service updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
         '404':
           description: Service not found
           content:

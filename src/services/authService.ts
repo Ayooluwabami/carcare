@@ -8,16 +8,15 @@ const JWT_SECRET = process.env.JWT_SECRET || '';
 
 export class AuthService {
     // Register a new user
-    async registerUser(data: { username: string; email: string; password: string }): Promise<IUser & Document> {
-        const { username, email, password } = data;
+    async registerUser(data: { email: string; password: string }): Promise<IUser & Document> {
+        const { email, password } = data;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             throw { status: 400, message: 'User already exists' }; 
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
+        const newUser = new User({ email, password });
         return await newUser.save();
     }
 
@@ -25,14 +24,14 @@ export class AuthService {
     async loginUser(data: { email: string; password: string }): Promise<ILoginResponse> {
         const { email, password } = data;
 
-        const user = (await User.findOne({ email }).exec()) as IUser & Document;
+        const user = await User.findOne({ email }).exec();
         if (!user) {
-            throw { status: 401, message: 'Invalid login' }; // Generic error message for security
+            throw { status: 401, message: 'Invalid login' };
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            throw { status: 401, message: 'Invalid login' }; // Generic error message for security
+            throw { status: 401, message: 'Invalid login' }; 
         }
 
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });

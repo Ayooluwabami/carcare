@@ -25,7 +25,13 @@ export const addMechanic = async (req: Request<{}, {}, AddMechanicRequestBody>, 
             return sendErrorResponse(res, 400, 'Invalid User ID format.');
         }
 
-        const newMechanic = await MechanicService.addMechanic({ userId: new mongoose.Types.ObjectId(userId), specialization, experienceYears, available });
+        const newMechanic = await MechanicService.addMechanic({
+            userId: new mongoose.Types.ObjectId(userId), 
+            specialization, 
+            experienceYears, 
+            available
+        });
+        
         sendSuccessResponse(res, 201, 'Mechanic added successfully', newMechanic);
     } catch (error: any) {
         logger.error(`Error adding mechanic: ${error.message}`, { stack: error.stack });

@@ -21,8 +21,9 @@ export const updateMechanic = async (mechanicId: string, updateData: IUpdateMech
     if (!Types.ObjectId.isValid(mechanicId)) {
         throw { status: 400, message: 'Invalid mechanic ID' }; 
     }
-    return await Mechanic.findByIdAndUpdate(mechanicId, updateData, { new: true }).exec();
+    return await Mechanic.findByIdAndUpdate(mechanicId, updateData, { new: true, runValidators: true }).exec();
 };
+
 
 // Delete a mechanic
 export const deleteMechanic = async (mechanicId: string): Promise<(MechanicType & Document) | null> => {
